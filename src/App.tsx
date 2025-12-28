@@ -50,6 +50,7 @@ function App() {
             localStorage.setItem("token", data.data.token);
             setVariant("success");
             setMessage("Logged in successfully.");
+            window.location.reload();
         })
             .catch(() => {
                 setVariant("danger");

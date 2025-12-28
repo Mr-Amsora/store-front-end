@@ -166,7 +166,7 @@ export function AuthModal({ show, onLogin, onSignUp }: AuthModalProps) {
                         </form>
                     )}
 
-                    <div className="d-flex justify-content-center mt-3">
+                    <div className="d-flex justify-content-end mt-3">
                         <button
                             className="btn btn-outline-secondary"
                             onClick={() => setIsLogin(!isLogin)}

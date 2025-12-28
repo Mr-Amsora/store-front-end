@@ -24,9 +24,6 @@ export function Sidebar() {
                     >
                         change the current password
                     </button>
-                    <button className="list-group-item list-group-item-action bg-light">
-                        All Products
-                    </button>
                 </div>
             </div>
 

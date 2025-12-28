@@ -23,6 +23,7 @@ function App() {
     });
     const [showCartModal, setShowCartModal] = useState(false); // Controls Popup visibility
     const [checkingOut, setCheckingOut] = useState(false);
+    const [variant, setVariant] = useState("primary");
 
     useEffect(() => {
 
@@ -46,10 +47,12 @@ function App() {
     const handleLogin = (e: LoginForm) => {
         api.post("/auth/login", e).then((data) => {
             localStorage.setItem("token", data.data.token);
-            window.location.reload();
+            setVariant("success");
+            setMessage("Logged in successfully.");
         })
-            .catch((error) => {
-                console.log(error);
+            .catch(() => {
+                setVariant("danger");
+                setMessage("Invalid credentials. Please try again.");
             })
     }
 
@@ -57,15 +60,18 @@ function App() {
         api.post("/users", e).
         then(()=> {
             setLogin(!login);
+            setVariant("success");
             setMessage(`Account ${e.name} created successfully! Please login.`);
         }).
-        catch((error) => {
-            console.log(error);
+        catch(() => {
+            setVariant("danger");
+            setMessage("the email is already used. Please try again.");
         })
     }
 
     const handleLogout = () => {
         localStorage.removeItem("token");
+        setVariant("warning");
         setMessage("Logged out successfully.");
     }
 
@@ -73,8 +79,17 @@ function App() {
         setLoadingCart(true)
         api.post(`/carts/${cart.id}/items`, { productId: p.id })
             .then(() => api.get<Cart>(`/carts/${cart.id}`))
-            .then(res => setCart(res.data))
-            .catch(console.error)
+            .then(res => {
+                setCart(res.data);
+                setVariant("success");
+                setMessage(`${p.name} added to cart successfully.`);
+            })
+            .catch(
+                ()=>{
+                    setVariant("danger");
+                    setMessage("You cant add more than the available in the stock.");
+                }
+            )
             .finally(() => setLoadingCart(false));
     }
 
@@ -87,9 +102,9 @@ function App() {
                 setShowCartModal(false);
                 setCart({ id: "", items: [], totalPrice: 0 });
             })
-            .catch((err) => {
-                console.error(err);
-                alert("Checkout failed. Please try again.");
+            .catch(() => {
+                setVariant("danger");
+                setMessage("Checkout failed. Please try again.");
             })
             .finally(() => setCheckingOut(false));
     };
@@ -98,6 +113,7 @@ function App() {
     if (localStorage.getItem("token")) {
         return (
             <>
+                {message !== "" ? <Alert onClose={()=>setMessage("")} variant={variant}>{message} </Alert> : null}
                 <div className="d-flex flex-column vh-100 overflow-hidden">
 
                     <TopNav onLogout={handleLogout} cart={cart}  onShowCart={()=> setShowCartModal(true)} />
@@ -127,7 +143,7 @@ function App() {
     else
         return (
             <>
-                {message !== "" ? <Alert onClose={()=>setMessage("")}>{message} </Alert> : null}
+                {message !== "" ? <Alert onClose={()=>setMessage("")} variant={variant}>{message} </Alert> : null}
                 {login && <Login onSubmit={handleLogin}></Login>}
                 {!login && <SignUp onSubmit={handleSignUp}></SignUp>}
                 <div className={"container mt-1"}>

@@ -3,11 +3,12 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import api from "../services/clientApi";
 import { useState } from "react";
+import {Alert} from "./Alert.tsx";
 
-// 1. Update Schema to include categoryId
+
 const productSchema = z.object({
     name: z.string().min(3, "Name must be at least 3 characters"),
-    description: z.string().min(10, "Description must be at least 10 characters"),
+    description: z.string().min(0),
     price: z.coerce.number().min(0.01, "Price must be greater than 0"),
     quantity: z.coerce.number().int().min(1, "Quantity must be at least 1"),
     categoryId: z.coerce.number().int().min(1, "Please select a category"), // New Field
@@ -24,6 +25,8 @@ interface AddProductModalProps {
 export function AddProductModal({ show, onClose }: AddProductModalProps) {
     const [uploading, setUploading] = useState(false);
     const [preview, setPreview] = useState<string>("");
+    const [variant, setVariant] = useState("primary");
+    const [message, setMessage] = useState("");
 
     const {
         register,
@@ -53,42 +56,43 @@ export function AddProductModal({ show, onClose }: AddProductModalProps) {
         setUploading(true);
         const formData = new FormData();
         formData.append("file", file);
-
-        try {
-            const res = await api.post("/images", formData, {
+        api.post("/images", formData, {
                 headers: { "Content-Type": "multipart/form-data" }
-            });
-
+            }).then((res)=>{
             const url = res.data.imageUrl;
-
             setValue("imageUrl", url);
             setPreview(url);
             trigger("imageUrl");
-        } catch (err) {
-            console.error(err);
-            alert("Image upload failed");
-        } finally {
+        }).catch(()=>{
+            setVariant("danger");
+            setMessage("Image upload failed");
+        }).finally(()=> {
             setUploading(false);
-        }
+        })
     };
 
     const onSubmit = (data: ProductFormData) => {
         api.post("/products", data)
             .then(() => {
-                alert("Product added successfully!");
+                setMessage("Product added successfully!");
+                setVariant("success");
                 reset();
                 setPreview("");
-                onClose();
-                window.location.reload();
+
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
             })
-            .catch((err) => {
-                console.error(err);
-                alert("Failed to add product.");
+            .catch(() => {
+                setVariant("danger");
+                setMessage("Failed to add product.");
             });
     };
 
     return (
-        <div className="modal show d-block" style={{ backgroundColor: "rgba(0,0,0,0.5)", zIndex: 1050 }} tabIndex={-1}>
+        <>
+            {message !== "" ? <Alert onClose={()=>setMessage("")} variant={variant}>{message} </Alert> : null}
+            <div className="modal show d-block" style={{ backgroundColor: "rgba(0,0,0,0.5)", zIndex: 1050 }} tabIndex={-1}>
             <div className="modal-dialog modal-dialog-centered">
                 <div className="modal-content">
                     <div className="modal-header">
@@ -118,7 +122,6 @@ export function AddProductModal({ show, onClose }: AddProductModalProps) {
                                 <div className="invalid-feedback">{errors.description?.message as string}</div>
                             </div>
 
-                            {/* New Category Field */}
                             <div className="mb-3">
                                 <label className="form-label">Category</label>
                                 <select
@@ -204,5 +207,6 @@ export function AddProductModal({ show, onClose }: AddProductModalProps) {
                 </div>
             </div>
         </div>
+        </>
     );
 }

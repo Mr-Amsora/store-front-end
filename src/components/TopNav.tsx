@@ -14,7 +14,7 @@ export function TopNav({ onLogout, cart , onShowCart}: TopNavProps) {
 
     return (
         <nav className="navbar navbar-expand navbar-dark bg-primary px-3 shadow-sm" style={{ flexShrink: 0 }}>
-            <span className="navbar-brand mb-0 h1">My E-Shop</span>
+            <span className="navbar-brand mb-0 h1">Spring-React Shop Project</span>
 
             <div className="ms-auto d-flex align-items-center gap-3">
 

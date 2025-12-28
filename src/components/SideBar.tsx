@@ -1,16 +1,15 @@
 import { useState } from "react";
 import { AddProductModal } from "./AddProductModal";
+import {ChangePasswordModal} from "./ChangePasswordModal.tsx";
 
 export function Sidebar() {
     const [showAddProduct, setShowAddProduct] = useState(false);
+    const [showChangePass, setShowChangePass] = useState(false)
 
     return (
         <>
             <div className="bg-light border-end" style={{ width: "250px", minHeight: "100%" }}>
                 <div className="list-group list-group-flush pt-3">
-                    <button className="list-group-item list-group-item-action bg-light">
-                        All Products
-                    </button>
                     <button className="list-group-item list-group-item-action bg-light">
                         My Orders
                     </button>
@@ -20,8 +19,13 @@ export function Sidebar() {
                     >
                         Add New Product
                     </button>
+                    <button className="list-group-item list-group-item-action bg-light"
+                            onClick={() => setShowChangePass(true)}
+                    >
+                        change the current password
+                    </button>
                     <button className="list-group-item list-group-item-action bg-light">
-                        Settings
+                        All Products
                     </button>
                 </div>
             </div>
@@ -30,6 +34,12 @@ export function Sidebar() {
                 show={showAddProduct}
                 onClose={() => setShowAddProduct(false)}
             />
+
+            <ChangePasswordModal show={showChangePass} onClose={
+                () => setShowChangePass(false)
+            }>
+
+            </ChangePasswordModal>
         </>
     );
 }

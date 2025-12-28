@@ -1,14 +1,15 @@
 import "./App.css"
-import {Login, type LoginForm} from "./components/Login.tsx";
+import {type LoginForm} from "./components/Login.tsx";
 import api from "./services/clientApi.ts";
 import {useEffect, useState} from "react";
-import {SignUp, type SignUpForm} from "./components/SignUp.tsx";
+import {type SignUpForm} from "./components/SignUp.tsx";
 import {Alert} from "./components/Alert.tsx";
 import {Shopping} from "./components/Shopping.tsx";
 import {Sidebar} from "./components/SideBar.tsx";
 import {TopNav} from "./components/TopNav.tsx";
 import type {Cart, Product} from "./types.ts";
 import {CartModal} from "./components/CartModal.tsx";
+import {AuthModal} from "./components/AuthModal.tsx";
 
 
 function App() {
@@ -122,6 +123,7 @@ function App() {
                         show={showCartModal}
                         onClose={() => setShowCartModal(false)}
                         cart={cart}
+                        setCart={setCart}
                         onCheckout={handleCheckout}
                         isLoading={checkingOut}
                     />
@@ -143,16 +145,12 @@ function App() {
     else
         return (
             <>
-                {message !== "" ? <Alert onClose={()=>setMessage("")} variant={variant}>{message} </Alert> : null}
-                {login && <Login onSubmit={handleLogin}></Login>}
-                {!login && <SignUp onSubmit={handleSignUp}></SignUp>}
-                <div className={"container mt-1"}>
-                    <button className={"btn btn-outline-secondary"}
-                            style={{marginLeft:"865px"}}
-                            onClick={()=>{setLogin(!login)}}>
-                        {login ? "Sign Up" : "Login"}
-                    </button>
-                </div>
+                {message && (
+                    <Alert onClose={() => setMessage("")} variant={variant}>
+                        {message}
+                    </Alert>
+                )}
+                <AuthModal show={true} onLogin={handleLogin} onSignUp={handleSignUp} />
             </>
         )
     }

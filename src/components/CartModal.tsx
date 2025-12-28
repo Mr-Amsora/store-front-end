@@ -1,15 +1,28 @@
 import type {Cart} from "../types";
 import { FaCreditCard } from "react-icons/fa6";
+import api from "../services/clientApi.ts";
 
 interface CartModalProps {
     show: boolean;
     onClose: () => void;
-    cart: Cart | null;
+    cart: Cart;
     onCheckout: () => void;
     isLoading: boolean;
+    setCart: (cart: Cart) => void;
 }
 
-export function CartModal({ show, onClose, cart, onCheckout, isLoading }: CartModalProps) {
+export function CartModal({ show, onClose,setCart, cart, onCheckout, isLoading }: CartModalProps) {
+
+    const handleDelete = (id :number) => {
+        const cartId = cart.id;
+        api.delete(`/carts/${cartId}/items/${id}`).then(()=>{
+            api.get(`carts/${cartId}`).then((res)=>{
+                setCart(res.data);
+            })
+        })
+    }
+
+
     if (!show) return null;
 
     return (
@@ -33,8 +46,9 @@ export function CartModal({ show, onClose, cart, onCheckout, isLoading }: CartMo
                                     <tr>
                                         <th>Product</th>
                                         <th className="text-center">Qty</th>
-                                        <th className="text-end">Price</th>
-                                        <th className="text-end">Total</th>
+                                        <th className="text-center">Price</th>
+                                        <th className="text-center">Total</th>
+                                        <th></th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -42,8 +56,9 @@ export function CartModal({ show, onClose, cart, onCheckout, isLoading }: CartMo
                                         <tr key={item.product.id}>
                                             <td>{item.product.name}</td>
                                             <td className="text-center">{item.quantity}</td>
-                                            <td className="text-end">${item.product.price.toFixed(2)}</td>
-                                            <td className="text-end fw-bold">${item.totalPrice.toFixed(2)}</td>
+                                            <td className="text-center">${item.product.price.toFixed(2)}</td>
+                                            <td className="text-center fw-bold">${item.totalPrice.toFixed(2)}</td>
+                                            <td className={"text-end"}><button className={"btn btn-outline-danger"} onClick={()=>{handleDelete(item.product.id)}}>Remove</button> </td>
                                         </tr>
                                     ))}
                                     </tbody>

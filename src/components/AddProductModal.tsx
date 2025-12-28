@@ -188,14 +188,6 @@ export function AddProductModal({ show, onClose }: AddProductModalProps) {
 
                     <div className="modal-footer">
                         <button
-                            type="button"
-                            className="btn btn-secondary"
-                            onClick={() => { reset(); setPreview(""); onClose(); }}
-                            disabled={isSubmitting || uploading}
-                        >
-                            Cancel
-                        </button>
-                        <button
                             type="submit"
                             form="addProductForm"
                             className="btn btn-primary"

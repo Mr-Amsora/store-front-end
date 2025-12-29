@@ -100,7 +100,7 @@ function App() {
         api.post("/checkout", { cartId: cart.id })
             .then((data) => {
                 console.log(data);
-                window.open(data.data.checkoutUrl, "_blank");
+                window.open(data.data.checkoutUrl, "_self");
                 setShowCartModal(false);
                 setCart({ id: "", items: [], totalPrice: 0 });
             })

@@ -9,9 +9,9 @@ import {Alert} from "./Alert.tsx";
 const productSchema = z.object({
     name: z.string().min(3, "Name must be at least 3 characters"),
     description: z.string().min(0),
-    price: z.coerce.number().min(0.01, "Price must be greater than 0"),
+    price: z.coerce.number().min(0.01, "Price must be greater than 0").max(50000, "Price must be less than 50000"),
     quantity: z.coerce.number().int().min(1, "Quantity must be at least 1"),
-    categoryId: z.coerce.number().int().min(1, "Please select a category"), // New Field
+    categoryId: z.coerce.number().int().min(1, "Please select a category"),
     imageUrl: z.string().url("Must upload an image"),
 });
 
